@@ -1,0 +1,177 @@
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<form class="form-horizontal" id='form' action='/register' method="POST">
+  <fieldset>
+    <div id="legend">
+      <legend class="">Register</legend>
+    </div>
+    <div class="control-group">
+      <!-- Username -->
+      <label class="control-label"  for="username">Username</label>
+      <div class="controls">
+        <input type="text" id="username" autocomplete="off" name="username" required placeholder="Choose a username" class="input-xlarge">
+        <span id='response'></span>
+        <p class="help-block">Username can contain any letters or numbers, without spaces</p>
+        <p id="warn-text-1" style="color:  red"></p>
+      </div>
+    </div>
+ 
+    <div class="control-group">
+      <!-- E-mail -->
+      <label class="control-label" for="email">E-mail</label>
+      <div class="controls">
+        <input type="text" id="email" name="email" placeholder="Please provide your email" class="input-xlarge">
+        <span id='response-2'></span>
+        <p id="warn-text-2" style="color:  red"></p>
+      </div>
+    </div>
+ 
+    <div class="control-group">
+      <!-- Password-->
+      <label class="control-label" for="password">Password</label>
+      <div class="controls">
+        <input type="password" id="password" name="password" placeholder="Please enter a password" class="input-xlarge">
+        <span id='response-3'></span>        
+        <p id="warn-text-3" style="color:  red"></p>
+      </div>
+    </div>
+ 
+    <div class="control-group">
+      <!-- Password -->
+      <label class="control-label"  for="password_confirm">Password (Confirm)</label>
+      <div class="controls">
+        <input type="password" id="password_confirm" name="password_confirm" placeholder="Please confirm password" class="input-xlarge">
+        <span id='response-4'></span>        
+        <p id="warn-text-4" style="color:  red"></p>
+      </div>
+    </div>
+ 
+    <div class="control-group">
+      <!-- Button -->
+      <div class="controls">
+        <button class="btn btn-success">Register</button>
+        <h6>Been here? <a href="/login">Login</a> </h6>
+
+      </div>
+    </div>
+  </fieldset>
+</form>
+
+
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+
+<script>
+
+    var emailValid = false
+    var usernameValid = false
+    var passwordValid = false
+    var passwordMatch = false
+
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+    $('#username').keyup(()=> {
+        var username =$('#username').val()
+        if(username.length < 2) {
+            $('#warn-text-1').text('Username must be at least 3 characters')
+            $('#response').text('❌')         
+            usernameValid = false   
+        }
+        else{
+            $('#warn-text-1').text('')
+        $.post('/user', {username : username}, (data, status)=> {
+            if(data.exists){
+                 $('#warn-text-1').text('Username is taken')
+                 $('#response').text('❌')
+                 usernameValid = false   
+
+                
+                }
+            else {
+                $('#warn-text-1').text('')
+                $('#response').text('✔️')
+                usernameValid = true
+            }
+            
+        })  
+        } 
+         
+        
+    })
+
+    $('#email').keyup(()=> {
+        var email = $('#email').val()
+        if(validateEmail(email)){
+            $('#warn-text-2').text('')
+                $('#response-2').text('✔️')
+            $.post('/user', {email : email}, (data, status)=> {
+            if(data.exists){
+                 $('#warn-text-2').text('Email-Id exists')
+                 $('#response-2').text('❌')
+                 emailValid = false
+                
+                }
+            else {
+                $('#warn-text-2').text('')
+                $('#response-2').text('✔️')
+                emailValid = true
+            }
+            
+        })  
+        }else {
+                $('#warn-text-2').text('Enter a valid email-id')
+                 $('#response-2').text('❌')
+                 emailValid = false
+
+        }
+
+        
+    })
+
+    $("#password").keyup(()=> {
+        var password = $("#password").val()
+        if(password.length < 8) {
+            $('#warn-text-3').text("Password should be at least 8 characters")
+            $('#response-3').text('❌')
+            passwordValid = false
+        }else{
+            $('#warn-text-3').text("")
+            $('#response-3').text('✔️')
+            passwordValid = true
+        }
+
+    })
+
+    $('#password_confirm').keyup(()=> {
+        var password = $('#password').val()
+        var password_confirm = $('#password_confirm').val()
+
+        if(password_confirm !== password){
+            $('#warn-text-4').text("Passwords don't match")
+            $('#response-4').text('❌')
+            passwordMatch = false
+        }else {
+            $('#warn-text-4').text("")
+            $('#response-4').text('✔️')
+            passwordMatch = true
+        }
+
+    })
+
+    $('#form').on('submit', function(e){
+        // validation code here
+        e.preventDefault()
+     if( usernameValid && passwordMatch && emailValid && passwordValid ){
+         this.submit()
+     }else {
+        alert('One or more fields are incomplete or invalid. Please check and try again.')
+    }
+    });
+</script>

@@ -4,6 +4,7 @@ function joinRoom(roomName){
     })
 
     nsSocket.on('history', history=> {
+        
         const messagesUI = document.querySelector('#messages')
         messagesUI.innerHTML = "";
         history.forEach(msg => {
@@ -14,8 +15,6 @@ function joinRoom(roomName){
     })
     nsSocket.on('updateMemberNumber', newNumber =>{
         document.querySelector('.curr-room-text').innerText = roomName
-        console.log(roomName);
-        
         document.querySelector('.curr-room-num-users').innerHTML = `${newNumber} <span class="glyphicon glyphicon-user"></span> `
 
     }) 
